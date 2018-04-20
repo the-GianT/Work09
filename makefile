@@ -30,5 +30,8 @@ gmath.o: gmath.c gmath.h matrix.h
 stack.o: stack.c stack.h matrix.h
 	$(CC) $(CFLAGS) -c stack.c
 
+randRange.o: randRange.c randRange.h
+	$(CC) $(CFLAGS) -c randRange.c
+
 clean:
 	rm *.o *~
