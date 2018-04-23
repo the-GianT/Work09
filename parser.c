@@ -112,6 +112,8 @@ void parse_file ( char * filename,
     } else if (strncmp(line, "sphere", strlen(line)) == 0) {
       double args[4];
       int numinputs;
+      int step = 100;
+      int step_3d = 10;
 
       /* Read arguments: */
       fgets(line, 255, f);
@@ -123,7 +125,7 @@ void parse_file ( char * filename,
 	return;
       }
       
-      add_sphere(edges, *args, args[1], args[2], args[3], 12);
+      add_sphere(edges, *args, args[1], args[2], args[3], step_3d);
       matrix_mult(cs->data[cs->top], edges); // apply transformations
       draw_polygons(edges, s, c);
       edges->lastcol = 0; // clear temporary polygon matrix
@@ -142,7 +144,7 @@ void parse_file ( char * filename,
 	return;
       }
       
-      add_torus(edges, *args, args[1], args[2], args[3], args[4], 12);
+      add_torus(edges, *args, args[1], args[2], args[3], args[4], step_3d);
       matrix_mult(cs->data[cs->top], edges); // apply transformations
       draw_polygons(edges, s, c);
       edges->lastcol = 0; // clear temporary polygon matrix
@@ -186,7 +188,7 @@ void parse_file ( char * filename,
 	return;
       }
       
-      add_circle(edges, *args, args[1], args[2], args[3], 100);
+      add_circle(edges, *args, args[1], args[2], args[3], step_3d);
       matrix_mult(cs->data[cs->top], edges); // apply transformations
       draw_lines(edges, s, c);
       edges->lastcol = 0; // clear temporary polygon matrix
