@@ -21,7 +21,53 @@
   Color should be set differently for each polygon.
   ====================*/
 void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
+  int x0; // travels along line BT
+  int x1; // travels along line BM until y == yM, then along line MT
+  int y;
+  double * xb, xm, xt; // pointers to x coordinates
+  int * yb, ym, yt; // pointers to y coordinates
+  /*
+  int xb, yb; // coordinates of B
+  int xm, ym; // coordinates of M
+  int xt, yt; // coordinates of T
+  */
 
+  // int bottom, middle, top, tmp; // indices of the points in the polygon matrix
+  int i;
+
+  for (i = 0; i < points->lastcol - 2; i += 3) {
+
+    // Sort the points based on their y values.
+    if (points->m[1][i + 1] > points->m[1][i + 2]) {
+      /*
+	top = i + 1;
+	middle = i + 2;
+      */
+      yt = points->m[1] + i + 1;
+      ym = points->m[1] + i + 2;
+    } else {
+      /*
+      top = i + 2;
+      middle = i + 1;
+      */
+      yt = points->m[1] + i + 2;
+      ym = points->m[1] + i + 1;
+    }
+
+    // if (points->m[1][i] > points->m[1][middle]) {
+    if (points->m[1][i] > *ym) {
+      /* WHERE YOU WERE LAST WORKING */
+      tmp = middle;
+      middle = i;
+      bottom = tmp;
+      if (points->m[1][middle] > points->m[1][top]) {
+	tmp = top;
+	top = middle;
+	middle = tmp;
+      }
+    }
+
+    while
 }
 
 /*======== void add_polygon() ==========
