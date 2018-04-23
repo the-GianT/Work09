@@ -8,6 +8,6 @@
 void parse_file ( char * filename,
                   struct stack * cs,
                   struct matrix * edges,
-                  screen s);
+                  screen s, zbuffer zb);
 
 #endif

@@ -77,7 +77,7 @@ for PI)
 void parse_file ( char * filename,
                   struct stack * cs,
                   struct matrix * edges,
-		  screen s) {
+		  screen s, zbuffer zb) {
 
   FILE *f;
   char line[256];
@@ -85,6 +85,7 @@ void parse_file ( char * filename,
   // struct stack *cs; // coordinate system
 
   clear_screen(s);
+  clear_zbuffer(zb);
   c.red = 0;
   c.green = 0;
   c.blue = 0;
@@ -346,6 +347,10 @@ void parse_file ( char * filename,
       matrix_mult(transform, edges);
       matrix_mult(transform, polygons);
       */
+
+    } else if ( strncmp(line, "clear", strlen(line)) == 0 ) {
+      clear_screen(s);
+      clear_zbuffer(zb);
       
     } else if (strncmp(line, "display", strlen(line)) == 0) {
 
