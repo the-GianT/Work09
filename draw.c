@@ -142,6 +142,7 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
                  polygons->m[2][point+2],
                  s, zb, c);
     }
+    free(normal);
   }
 }
 
