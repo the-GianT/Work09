@@ -26,6 +26,7 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
   int y;
   double * xb, xm, xt; // pointers to x coordinates
   int * yb, ym, yt; // pointers to y coordinates
+  double m0, m1; // reciprocals of the slopes
   /*
   int xb, yb; // coordinates of B
   int xm, ym; // coordinates of M
@@ -56,7 +57,6 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
 
     // if (points->m[1][i] > points->m[1][middle]) {
     if (points->m[1][i] > *ym) {
-      /* WHERE YOU WERE LAST WORKING */
       tmp = middle;
       middle = i;
       bottom = tmp;
@@ -67,7 +67,20 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
       }
     }
 
-    while
+    m0 = (points->m[0][top] - points->m[0][bottom])
+      / (points->m[1][top] - points->m[1][bottom]);
+    if (points->m[1][middle] != points->m[1][bottom])
+      m1 = (points->m[0][middle] - points->m[0][bottom])
+	/ (points->m[1][middle] - points->m[1][bottom]);
+
+    x0 = x1 = points->m[0][bottom];
+    // y = points->m[1][bottom];
+    for (y = points->m[1][bottom]; y < points->m[1][middle]; y++) {
+      x0 += m0;
+      
+    }
+    
+  }
 }
 
 /*======== void add_polygon() ==========
