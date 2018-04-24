@@ -37,53 +37,52 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
   */
 
   int bottom, middle, top, tmp; // indices of the points in the polygon matrix
-  int i;
+  // int i;
 
-  for (i = 0; i < points->lastcol - 2; i += 3) {
+  // for (i = 0; i < points->lastcol - 2; i += 3) {
 
-    // Sort the points based on their y values.
-    if (points->m[1][i + 1] > points->m[1][i + 2]) {
-      top = i + 1;
-      middle = i + 2;
-      /*
-	yt = points->m[1] + i + 1;
-	ym = points->m[1] + i + 2;
-      */
-    } else {
-      top = i + 2;
-      middle = i + 1;
-      /*
+  // Sort the points based on their y values.
+  if (points->m[1][i + 1] > points->m[1][i + 2]) {
+    top = i + 1;
+    middle = i + 2;
+    /*
+      yt = points->m[1] + i + 1;
+      ym = points->m[1] + i + 2;
+    */
+  } else {
+    top = i + 2;
+    middle = i + 1;
+    /*
       yt = points->m[1] + i + 2;
       ym = points->m[1] + i + 1;
-      */
+    */
+  }
+  if (points->m[1][i] > points->m[1][middle]) {
+    // if (points->m[1][i] > *ym) {
+    tmp = middle;
+    middle = i;
+    bottom = tmp;
+    if (points->m[1][middle] > points->m[1][top]) {
+      tmp = top;
+      top = middle;
+      middle = tmp;
     }
-    if (points->m[1][i] > points->m[1][middle]) {
-      // if (points->m[1][i] > *ym) {
-      tmp = middle;
-      middle = i;
-      bottom = tmp;
-      if (points->m[1][middle] > points->m[1][top]) {
-	tmp = top;
-	top = middle;
-	middle = tmp;
-      }
-      
-    } else
-      bottom = i;
+    
+  } else
+    bottom = i;
 
-    x0 = x1 = points->m[0][bottom];
-    
-    m0 = (points->m[0][top] - points->m[0][bottom])
-      / (points->m[1][top] - points->m[1][bottom]);
-    if (points->m[1][middle] != points->m[1][bottom])
-      m1 = (points->m[0][middle] - points->m[0][bottom])
-	/ (points->m[1][middle] - points->m[1][bottom]);
-    // y = points->m[1][bottom];
-    
-    for (y = points->m[1][bottom]; y < points->m[1][middle]; y++) {
-      x0 += m0;
-      
-    }
+  x0 = x1 = points->m[0][bottom];
+  
+  m0 = (points->m[0][top] - points->m[0][bottom])
+    / (points->m[1][top] - points->m[1][bottom]);
+  if (points->m[1][middle] != points->m[1][bottom])
+    m1 = (points->m[0][middle] - points->m[0][bottom])
+      / (points->m[1][middle] - points->m[1][bottom]);
+  // y = points->m[1][bottom];
+  
+  for (y = points->m[1][bottom]; y < points->m[1][middle]; y++) {
+    x0 += m0;
+    x1 += m1;
   }
 }
 
