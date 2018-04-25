@@ -21,8 +21,9 @@
   Color should be set differently for each polygon.
   ====================*/
 void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
-  int x0; // travels along line BT
-  int x1; // travels along line BM until y == yM, then along line MT
+  color c;
+  double x0; // travels along line BT
+  double x1; // travels along line BM until y == yM, then along line MT
   int y;
   /*
   double * xb, xm, xt; // pointers to x coordinates
@@ -38,6 +39,10 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
 
   int bottom, middle, top, tmp; // indices of the points in the polygon matrix
   // int i;
+
+  c.red = randRange(256);
+  c.green = randRange(256);
+  c.blue = randRange(256);
 
   // for (i = 0; i < points->lastcol - 2; i += 3) {
 
@@ -75,12 +80,28 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
   
   m0 = (points->m[0][top] - points->m[0][bottom])
     / (points->m[1][top] - points->m[1][bottom]);
+
+  // Calculate the reciprocal of the slope of BM
   if (points->m[1][middle] != points->m[1][bottom])
     m1 = (points->m[0][middle] - points->m[0][bottom])
       / (points->m[1][middle] - points->m[1][bottom]);
   // y = points->m[1][bottom];
-  
+
+  // Draw part of triangle from bottom to middle
   for (y = points->m[1][bottom]; y < points->m[1][middle]; y++) {
+    draw_line(x0, y, 0, x1, y, 0, s, zb, c);
+    x0 += m0;
+    x1 += m1;
+  }
+
+  // Calculate the reciprocal of the slope of MT
+  if (points->m[1][top] != points->m[1][middle])
+    m1 = (points->m[0][top] - points->m[0][middle])
+      / (points->m[1][top] - points->m[1][middle]);
+
+  // Draw part of triangle from middle to top
+  for (x1 = points->m[0][middle]; y < points->m[1][top]; y++) {
+    draw_line(x0, y, 0, x1, y, 0, s, zb, c);
     x0 += m0;
     x1 += m1;
   }
@@ -157,6 +178,7 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
                  polygons->m[1][point+2],
                  polygons->m[2][point+2],
                  s, zb, c);
+      scanline_convert(polygons, point, s, zb);
     }
     free(normal);
   }
