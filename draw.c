@@ -21,14 +21,16 @@
   Color should be set differently for each polygon.
   ====================*/
 void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
-  int x0; // travels along line BT
-  int x1; // travels along line BM until y == yM, then along line MT
+  color c;
+  double x0, z0; // travels along line BT
+  double x1, z1; // travels along line BM until y == yM, then along line MT
   int y;
   /*
   double * xb, xm, xt; // pointers to x coordinates
   int * yb, ym, yt; // pointers to y coordinates
   */
-  double m0, m1; // reciprocals of the slopes
+  double m0, m1; // reciprocals of the slopes (how much to increment x by)
+  double mz0, mz1; // how much to increment z by
   
   /*
   int xb, yb; // coordinates of B
@@ -38,6 +40,10 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
 
   int bottom, middle, top, tmp; // indices of the points in the polygon matrix
   // int i;
+
+  c.red = randRange(256);
+  c.green = randRange(256);
+  c.blue = randRange(256);
 
   // for (i = 0; i < points->lastcol - 2; i += 3) {
 
@@ -72,17 +78,47 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
     bottom = i;
 
   x0 = x1 = points->m[0][bottom];
-  
+  z0 = z1 = points->m[2][bottom];
+
+  // Calculate the slopes for line BT
   m0 = (points->m[0][top] - points->m[0][bottom])
     / (points->m[1][top] - points->m[1][bottom]);
-  if (points->m[1][middle] != points->m[1][bottom])
+  mz0 = (points->m[2][top] - points->m[2][bottom])
+    / (points->m[1][top] - points->m[1][bottom]);
+
+  // Calculate the slopes for line BM
+  if (points->m[1][middle] != points->m[1][bottom]) {
     m1 = (points->m[0][middle] - points->m[0][bottom])
       / (points->m[1][middle] - points->m[1][bottom]);
+    mz1 = (points->m[2][middle] - points->m[2][bottom])
+      / (points->m[1][middle] - points->m[1][bottom]);
+  }
   // y = points->m[1][bottom];
-  
+
+  // Draw part of triangle from bottom to middle
   for (y = points->m[1][bottom]; y < points->m[1][middle]; y++) {
+    draw_line(x0, y, z0, x1, y, z1, s, zb, c);
     x0 += m0;
     x1 += m1;
+    z0 += mz0;
+    z1 += mz1;
+  }
+
+  // Calculate the slopes for line MT
+  if (points->m[1][top] != points->m[1][middle]) {
+    m1 = (points->m[0][top] - points->m[0][middle])
+      / (points->m[1][top] - points->m[1][middle]);
+    mz1 = (points->m[2][top] - points->m[2][middle])
+      / (points->m[1][top] - points->m[1][middle]);
+  }
+
+  // Draw part of triangle from middle to top
+  for (x1 = points->m[0][middle]; y < points->m[1][top]; y++) {
+    draw_line(x0, y, z0, x1, y, z1, s, zb, c);
+    x0 += m0;
+    x1 += m1;
+    z0 += mz0;
+    z1 += mz1;
   }
 }
 
@@ -135,7 +171,8 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
     normal = calculate_normal(polygons, point);
 
     if ( normal[2] > 0 ) {
-
+      
+      /*
       draw_line( polygons->m[0][point],
                  polygons->m[1][point],
                  polygons->m[2][point],
@@ -157,6 +194,8 @@ void draw_polygons(struct matrix *polygons, screen s, zbuffer zb, color c ) {
                  polygons->m[1][point+2],
                  polygons->m[2][point+2],
                  s, zb, c);
+      */
+      scanline_convert(polygons, point, s, zb);
     }
     free(normal);
   }
@@ -577,24 +616,28 @@ void draw_line(int x0, int y0, double z0,
                screen s, zbuffer zb, color c) {
 
 
-  int x, y, d, A, B;
+  int x, y, z, d, A, B;
   int dy_east, dy_northeast, dx_east, dx_northeast, d_east, d_northeast;
   int loop_start, loop_end;
 
   //swap points if going right -> left
-  int xt, yt;
+  int xt, yt, zt;
   if (x0 > x1) {
     xt = x0;
     yt = y0;
+    zt = z0;
     x0 = x1;
     y0 = y1;
     z0 = z1;
     x1 = xt;
     y1 = yt;
+    z1 = zt;
   }
 
   x = x0;
   y = y0;
+  z = z0;
+  /* LEFT OFF HERE */
   A = 2 * (y1 - y0);
   B = -2 * (x1 - x0);
   int wide = 0;

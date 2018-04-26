@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
 
 #include "ml6.h"
 #include "display.h"
@@ -21,6 +22,7 @@ int main(int argc, char **argv) {
   edges = new_matrix(4, 4);
   // transform = new_matrix(4, 4);
   cs = new_stack();
+  srand(time(NULL));
   // polygons = new_matrix(4, 4);
 
   if ( argc == 2 )
