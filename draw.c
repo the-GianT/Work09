@@ -637,7 +637,6 @@ void draw_line(int x0, int y0, double z0,
   x = x0;
   y = y0;
   z = z0;
-  /* LEFT OFF HERE */
   A = 2 * (y1 - y0);
   B = -2 * (x1 - x0);
   int wide = 0;
