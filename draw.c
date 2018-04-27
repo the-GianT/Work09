@@ -113,6 +113,7 @@ void scanline_convert( struct matrix *points, int i, screen s, zbuffer zb ) {
   }
 
   // Draw part of triangle from middle to top
+  z1 = points->m[2][middle];
   for (x1 = points->m[0][middle]; y < points->m[1][top]; y++) {
     draw_line(x0, y, z0, x1, y, z1, s, zb, c);
     x0 += m0;
@@ -716,7 +717,7 @@ void draw_line(int x0, int y0, double z0,
   
   int x, y;
   double z;
-  double mz; // delta z / delta y
+  double mz; // what to increment z by
   
   int d;
 
@@ -734,7 +735,7 @@ void draw_line(int x0, int y0, double z0,
     y0 = y1;
     y1 = tmpy;
     */
-    int tmp;
+    double tmp;
 
     tmp = x0;
     x0 = x1;
@@ -751,7 +752,7 @@ void draw_line(int x0, int y0, double z0,
 
   a = y1 - y0; // delta y
   b = x0 - x1; // negative delta x
-  if (y0 != y1)
+  // if (y0 != y1)
   
   x = x0;
   y = y0;
@@ -760,65 +761,81 @@ void draw_line(int x0, int y0, double z0,
   if (a >= 0) { // positive slope (or slope of zero)
     
     if (a < -b) { // octant 1
-      
+
+      if (x0 != x1)
+	mz = (z1 - z0) / (x1 - x0);
       d = 2 * a + b; // equivalent to f(x0+1, y0+1/2)
       while (x < x1) {
-	plot(s, c, x, y);
+	plot(s, zb, c, x, y, z);
 	if (d > 0) { // if midpoint between the two pixels is below the line
 	  y++;
 	  d += 2 * b;
 	}
 	x++;
+	z += mz;
 	d += 2 * a;
       }
-      plot(s, c, x1, y1);
+      plot(s, zb, c, x1, y1, z1);
+      // plot (s, zb, c, x, y, z);
       
     } else { // octant 2
-      
+
+      if (y0 != y1)
+	mz = (z1 - z0) / (y1 - y0);
       d = a + 2 * b; // equivalent to f(x0+1/2, y0+1)
       while (y < y1) {
-	plot(s, c, x, y);
+	plot(s, zb, c, x, y, z);
 	if (d < 0) {
 	  // if midpoint between the two pixels is to the left of the line
 	  x++;
 	  d += 2 * a;
 	}
 	y++;
+	z += mz;
 	d += 2 * b;
       }
-      plot(s, c, x1, y1);
+      plot(s, zb, c, x1, y1, z1);
+      // plot(s, zb, c, x, y, z);
     }
     
   } else { // negative slope
 
     if (a < b) { // octant 7
-      
+
+      if (y0 != y1)
+	mz = (z1 - z0) / (y1 - y0);
       d = a - 2 * b; // equivalent to f(x0+1/2, y0-1)
       while (y > y1) {
-	plot(s, c, x, y);
+	plot(s, zb, c, x, y, z);
 	if (d > 0) {
 	  // if midpoint between the two pixels is to the left of the line
 	  x++;
 	  d += 2 * a;
 	}
 	y--;
+	z -= mz;
 	d -= 2 * b;
       }
-      plot(s, c, x1, y1);
+      plot(s, zb, c, x1, y1, z1);
+      // plot(s, zb, c, x, y, z);
       
     } else { // octant 8
-      
+
+      if (x0 != x1)
+	mz = (z1 - z0) / (x1 - x0);
       d = 2 * a - b; // equivalent to f(x0+1, y0-1/2)
       while (x < x1) {
-	plot(s, c, x, y);
+	plot(s, zb, c, x, y, z);
 	if (d < 0) { // if midpoint between the two pixels is above the line
 	  y--;
 	  d -= 2 * b;
 	}
 	x++;
+	z += mz;
 	d += 2 * a;
       }
-      plot(s, c, x1, y1);
+      plot(s, zb, c, x1, y1, z1);
+      // plot(s, zb, c, x, y, z);
     } // end inner else statement
   } // end outer else statement
 } // end void draw_line()
