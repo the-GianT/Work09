@@ -1,3 +1,8 @@
+/*
+  I got this randRange code from
+  http://www.cs.yale.edu/homes/aspnes/pinewiki/attachments/C(2f)Randomization/randRange.c
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
